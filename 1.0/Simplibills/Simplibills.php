@@ -18,11 +18,11 @@ class Simplibills extends Widget{
         ];
     }
 
-    /*
+    
     public function isAuthorized(){
         return $this->getUser()->isInJobFunction('AR-CA');
     }
-    */
+    
 
     public function getData(){
         return [

@@ -123,7 +123,7 @@ function getNormalSteps($indate, $outdate)
 function getPayments($indate, $outdate)
     {
         
-    $JobDB = $this->getJobDB();
+    $JobDB = DBFactory::getJobDB();
     $query = "	
         SELECT
             CONCAT(FLOOR(SUM(TIME_TO_SEC(notOverdue)) / 86400), 'd: ',

@@ -19,11 +19,9 @@ class Simplidents extends Widget{
         ];
     }
 
-    /*
     public function isAuthorized(){
         return $this->getUser()->isInJobFunction('AR-CA');
     }
-    */
 
     public function getData(){
         return [
@@ -107,4 +105,3 @@ class Simplidents extends Widget{
 	    return json_encode($incidents);
     }
 }
-		
