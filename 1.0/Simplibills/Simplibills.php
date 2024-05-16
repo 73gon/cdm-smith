@@ -18,9 +18,11 @@ class Simplibills extends Widget{
         ];
     }
 
+    /*
     public function isAuthorized(){
         return $this->getUser()->isInJobFunction('AR-CA');
     }
+    */
 
     public function getData(){
         return [
@@ -73,7 +75,6 @@ class Simplibills extends Widget{
                 AND (STATUS = 'Gebucht' OR STATUS = 'Zahlungsfreigabe')
                 GROUP BY STATUS;";
         $result = $JobDB->query($query);
-f
         $gebucht_zahlung = ['Zahlungsfreigabe' => 0, 'Gebucht' => 0];
         while ($row = $JobDB->fetchRow($result)) {
             if (isset($gebucht_zahlung[$row["STATUS"]])) {
