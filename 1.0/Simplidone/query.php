@@ -160,7 +160,7 @@ function getPayments($indate, $outdate)
             LEFT JOIN JRINCIDENT j ON r.VORGANGZL = j.incident
             WHERE r.STATUS = 'Gezahlt'
             AND (r.VORGANGZL AND r.RECHNUNGSFAELLIGKEIT) IS NOT NULL
-            AND (j1.startdate >= '".$indate."' AND j1.startdate < '".$outdate."')
+            AND (j.startdate >= '".$indate."' AND j.startdate < '".$outdate."')
             GROUP BY r.DOKUMENTENID
         ) AS allPayments";
     $result = $JobDB->query($query);
