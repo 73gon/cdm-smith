@@ -4,7 +4,6 @@ use JobRouter\Api\Dashboard\v1\Widget;
 
 class Simplibills extends Widget{
 	
-	
     public function getTitle(){
         return 'Ueberfaellige und unbezahlte Rechnungen';
     }
@@ -12,12 +11,18 @@ class Simplibills extends Widget{
 	public function getDimensions() {
 
         return [
-            'minHeight' => 2,
+            'minHeight' => 3,
             'minWidth' => 2,
-            'maxHeight' => 2,
+            'maxHeight' => 3,
             'maxWidth' => 2,
         ];
     }
+
+    
+    public function isAuthorized(){
+        return $this->getUser()->isInJobFunction('AR-CA');
+    }
+    
 
     public function getData(){
         return [
@@ -33,8 +38,7 @@ class Simplibills extends Widget{
                 "Buchhaltung IFSC",
                 "Lieferantenanlage",
                 "ausstehene Zahlungen", 
-                "Gebuchte Rechnungen",
-
+                "Gebuchte Rechnungen"
             ])
         ];
     }
@@ -71,7 +75,6 @@ class Simplibills extends Widget{
                 AND (STATUS = 'Gebucht' OR STATUS = 'Zahlungsfreigabe')
                 GROUP BY STATUS;";
         $result = $JobDB->query($query);
-
         $gebucht_zahlung = ['Zahlungsfreigabe' => 0, 'Gebucht' => 0];
         while ($row = $JobDB->fetchRow($result)) {
             if (isset($gebucht_zahlung[$row["STATUS"]])) {
@@ -108,7 +111,7 @@ class Simplibills extends Widget{
 
         $bearbeitung = array_fill(0, 8, 0);
         $stepMapping = [ "1" => 0, "2" => 1, "3" => 2, "4" => 3, "7" => 3, "5" => 4, "15" => 5, "17" => 6, "30" => 7];
-    
+
         while ($row = $JobDB->fetchRow($result)) {
             $step = $row["STEP"];
             if (isset($stepMapping[$step])) {

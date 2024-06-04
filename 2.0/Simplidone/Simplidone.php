@@ -27,11 +27,9 @@ class Simplidone extends Widget
         ];
     }
 
-/*
     public function isAuthorized(){
         return $this->getUser()->isInJobFunction('AR-CA');
     }
-*/ 
 
     public function getData()
     {
@@ -49,7 +47,7 @@ class Simplidone extends Widget
                 "offene Mahnungen",
                 "Ueberfaellige Rechnungen",
                 "Fristgerechte Rechnungen",
-            ]) //TODO change the labels based on config
+            ])
         ];
     }
 
@@ -106,8 +104,8 @@ class Simplidone extends Widget
                     LEFT JOIN RE_HEAD h2 ON r2.DOKUMENTENID = h2.DOKUMENTENID
                     LEFT JOIN JRINCIDENTS j2 ON h2.step_id = j2.process_step_id
                     WHERE r2.STATUS = 'Gezahlt'
-                    AND j2.STEP IN (1, 2, 3, 4, 17, 30, 15) //TODO change the steps based on config
-                    AND j2.processname = 'RECHNUNGSBEARBEITUNG' //TODO change the processname based on config
+                    AND j2.STEP IN (1, 2, 3, 4, 17, 30, 15)
+                    AND j2.processname = 'RECHNUNGSBEARBEITUNG'
                     GROUP BY r2.DOKUMENTENID, j2.STEP
                     HAVING COUNT(*) = 1
                     
@@ -118,8 +116,8 @@ class Simplidone extends Widget
                     LEFT JOIN RE_HEAD h1 ON r1.DOKUMENTENID = h1.DOKUMENTENID
                     LEFT JOIN JRINCIDENTS j1 ON h1.step_id = j1.process_step_id
                     WHERE r1.STATUS = 'Gezahlt'
-                    AND j1.STEP IN (1, 2, 3, 4, 17, 30, 15) //TODO change the steps based on config
-                    AND j1.processname = 'RECHNUNGSBEARBEITUNG' //TODO change the processname based on config
+                    AND j1.STEP IN (1, 2, 3, 4, 17, 30, 15)
+                    AND j1.processname = 'RECHNUNGSBEARBEITUNG'
                     GROUP BY r1.DOKUMENTENID, j1.STEP
                     HAVING COUNT(*) > 1
                 ) AS allDates
@@ -154,7 +152,7 @@ class Simplidone extends Widget
                     break;
                 default:
                     break;
-            } //TODO change the stepnumber based on config
+            }
         }
         return array_values($incidents);
     }

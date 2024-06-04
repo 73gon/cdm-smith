@@ -19,6 +19,10 @@ class Simplidents extends Widget{
         ];
     }
 
+    public function isAuthorized(){
+        return $this->getUser()->isInJobFunction('AR-CA');
+    }
+
     public function getData(){
         return [
             'incidents' => $this->getIncidents(),
@@ -64,6 +68,7 @@ class Simplidents extends Widget{
                     GROUP BY s.STEP, s.STEPLABEL;";
         $result = $JobDB->query($temp);
 
+
         $incidents = array_fill(0, 8, 0);
         while($row = $JobDB->fetchRow($result)){
             switch ($row["STEP"]) {
@@ -100,4 +105,3 @@ class Simplidents extends Widget{
 	    return json_encode($incidents);
     }
 }
-		 

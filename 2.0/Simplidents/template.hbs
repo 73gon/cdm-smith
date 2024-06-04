@@ -2,29 +2,15 @@
 <link rel="stylesheet" href="//code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css">
 
 <script> 
-let invisLabel = JSON.parse(document.getElementById("simplidents_invisLabel").innerHTML);
-let invisIncident = JSON.parse(document.getElementById("simplidents_invisIncident").innerHTML);
-let invisProcess = JSON.parse(document.getElementById("simplidents_invisProcess").innerHTML);
-let selectID = 0;
+let invisLabel= JSON.parse(document.getElementById("simplidents_invisLabel").innerHTML);
+let invisIncident= JSON.parse(document.getElementById("simplidents_invisIncident").innerHTML);
+
 
 simplidentsWidget();
 $j('#simplidents_outerBox').parent().toggleClass('simplidents_background', true);
 
 function simplidentsWidget(){
 	let outerBox = document.getElementById("simplidents_outerBox");
-    outerBox.innerHTML = "";
-
-    let dropDown = document.createElement("select");
-    dropDown.setAttribute("class", "simplidents_dropDown");
-    dropDown.addEventListener("change", update);
-    outerBox.appendChild(dropDown);
-    for (let i = 0; i < invisProcess.length; i++) {
-        let option = document.createElement("option");
-        option.value = invisProcess[i];
-        option.text = invisProcess[i];
-        dropDown.appendChild(option);
-    }
-    dropDown.selectedIndex = selectID;
 
     let gridContainer = document.createElement("div");
         gridContainer.setAttribute("class", "simplidents_gridContainer");
@@ -46,28 +32,6 @@ function simplidentsWidget(){
             gridBoxRight.appendChild(incident);
         }
 }
-
-function update(){
-    selectID = this.selectedIndex;
-    let dropDown = document.querySelector(".simplidents_dropDown");
-    let selectedOption = dropDown.options[dropDown.selectedIndex];
-    $j.ajax({
-            url: "dashboard/MyWidgets/Simplidents/query.php",
-            type: "GET",
-            data: { selectedOption: selectedOption.text },
-            dataType: "text",
-            success: function (data) {
-                let obj = JSON.parse(data);
-                invisLabel = JSON.parse(obj.labels.replace(/\\/g, ''));
-                invisIncident = JSON.parse(obj.incidents.replace(/\\/g, ''));
-                simplidentsWidget();
-            },
-            error: function (jqXHR, textStatus, errorThrown) {
-                console.log(textStatus, errorThrown);
-            }
-        });
-}
-
 </script>
 
 <style>
@@ -109,20 +73,6 @@ function update(){
 	text-overflow: ellipsis;
 }
 
-.simplidents_dropDown{
-    width: 100%;
-    padding: 2px;
-    padding-left: 8px;
-    font-size: 15px;
-    border: 1px solid #252730;
-    border-radius: 4px;
-    background-color: #252730;
-    color: #DDDDDD;
-    -webkit-appearance: none;
-    -moz-appearance: none;
-    appearance: none;
-}
-
 [id^="simplidents_invis"]{
     display: none;
 }
@@ -130,5 +80,4 @@ function update(){
 
 <div id="simplidents_invisIncident">{{incidents}}</div>
 <div id="simplidents_invisLabel">{{labels}}</div>
-<div id="simplidents_invisProcess">{{process}}</div>
 <div id="simplidents_outerBox"></div>
