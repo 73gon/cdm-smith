@@ -37,6 +37,7 @@ class Simplibills extends Widget{
                 "Buchhaltung IFSC",
                 "Lieferantenanlage",
                 "Lieferantenanlage IFSC",
+                "Lieferantenanlage Compliance",
                 "ausstehene Zahlungen", 
                 "Gebuchte Rechnungen"
             ])
@@ -109,8 +110,8 @@ class Simplibills extends Widget{
                 GROUP BY h.STEP;";
         $result = $JobDB->query($query);
 
-        $bearbeitung = array_fill(0, 8, 0);
-        $stepMapping = [ "1" => 0, "2" => 1, "3" => 2, "4" => 3, "7" => 3, "5" => 4, "17" => 5, "30" => 6, "40" => 7];
+        $bearbeitung = array_fill(0, 9, 0);
+        $stepMapping = [ "1" => 0, "2" => 1, "3" => 2, "4" => 3, "7" => 3, "5" => 4, "17" => 5, "30" => 6, "40" => 7, "50" => 8];
 
         while ($row = $JobDB->fetchRow($result)) {
             $step = $row["STEP"];

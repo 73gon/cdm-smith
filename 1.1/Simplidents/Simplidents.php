@@ -37,6 +37,7 @@ class Simplidents extends Widget{
                 "ausstehene Zahlungen", 
                 "Lieferantenanlage",
                 "Lieferantenanlage IFSC",
+                "Lieferantenanlage Compliance",
                 "offene Mahnungen"
             ])
         ];
@@ -65,6 +66,8 @@ class Simplidents extends Widget{
                     SELECT '30', 'Lieferantenanlage'
                     UNION ALL 
                     SELECT '40', 'Lieferantenanlage IFSC'
+                    UNION ALL
+                    SELECT '50', 'Lieferantenanlage Compliance'
                     UNION ALL 
                     SELECT '807', 'Zahllauf validieren'
                     UNION ALL 
@@ -76,7 +79,7 @@ class Simplidents extends Widget{
         $result = $JobDB->query($temp);
 
 
-        $incidents = array_fill(0, 10, 0);
+        $incidents = array_fill(0, 11, 0);
         while($row = $JobDB->fetchRow($result)){
             switch ($row["STEP"]) {
                 case "1":
@@ -108,8 +111,11 @@ class Simplidents extends Widget{
                 case "40":
                     $incidents[8] = $row["STEP_COUNT"];
                     break;
-                case "15":
+                case "50":
                     $incidents[9] = $row["STEP_COUNT"];
+                    break;
+                case "15":
+                    $incidents[10] = $row["STEP_COUNT"];
                     break;
                 default:
                     break;
