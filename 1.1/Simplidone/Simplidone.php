@@ -20,15 +20,15 @@ class Simplidone extends Widget
     {
 
         return [
-            'minHeight' => 3,
+            'minHeight' => 4,
             'minWidth' => 3,
-            'maxHeight' => 3,
+            'maxHeight' => 4,
             'maxWidth' => 3,
         ];
     }
 
     public function isAuthorized(){
-        return $this->getUser()->isInJobFunction('AR-CA');
+        return $this->getUser()->isInJobFunction('Widgets');
     }
 
     public function getData()
@@ -43,7 +43,9 @@ class Simplidone extends Widget
                 "Freigabe",
                 "Buchhaltung DE",
                 "Buchhaltung IFSC",
+                "Einkauf",
                 "Lieferantenanlage",
+                "Lieferantenanlage IFSC",
                 "offene Mahnungen",
                 "Ueberfaellige Rechnungen",
                 "Fristgerechte Rechnungen",
@@ -103,7 +105,6 @@ class Simplidone extends Widget
                     FROM RECHNUGNEN r2
                     LEFT JOIN RE_HEAD h2 ON r2.DOKUMENTENID = h2.DOKUMENTENID
                     LEFT JOIN JRINCIDENTS j2 ON h2.step_id = j2.process_step_id
-                    WHERE r2.STATUS = 'Gezahlt'
                     AND j2.STEP IN (1, 2, 3, 4, 17, 30, 15)
                     AND j2.processname = 'RECHNUNGSBEARBEITUNG'
                     GROUP BY r2.DOKUMENTENID, j2.STEP
@@ -115,8 +116,7 @@ class Simplidone extends Widget
                     FROM RECHNUGNEN r1
                     LEFT JOIN RE_HEAD h1 ON r1.DOKUMENTENID = h1.DOKUMENTENID
                     LEFT JOIN JRINCIDENTS j1 ON h1.step_id = j1.process_step_id
-                    WHERE r1.STATUS = 'Gezahlt'
-                    AND j1.STEP IN (1, 2, 3, 4, 17, 30, 15)
+                    AND j1.STEP IN (1, 2, 3, 4, 17, 5, 30, 40, 15)
                     AND j1.processname = 'RECHNUNGSBEARBEITUNG'
                     GROUP BY r1.DOKUMENTENID, j1.STEP
                     HAVING COUNT(*) > 1
@@ -126,7 +126,7 @@ class Simplidone extends Widget
                 ORDER BY STEP ASC";
         $result = $JobDB->query($query);
 
-        $incidents = array_fill(0, 7, array_fill(0, 3, 0));
+        $incidents = array_fill(0, 9, array_fill(0, 3, 0));
         while ($row = $JobDB->fetchRow($result)) {
             switch ($row["step"]) {
                 case "1":
@@ -144,11 +144,17 @@ class Simplidone extends Widget
                 case "17":
                     $incidents[4] = [$row["amount"], $row["sumTime"], $row["avgTime"]];
                     break;
-                case "30":
+                case "5":
                     $incidents[5] = [$row["amount"], $row["sumTime"], $row["avgTime"]];
                     break;
-                case "15":
+                case "30":
                     $incidents[6] = [$row["amount"], $row["sumTime"], $row["avgTime"]];
+                    break;
+                case "40":
+                    $incidents[7] = [$row["amount"], $row["sumTime"], $row["avgTime"]];
+                    break;
+                case "15":
+                    $incidents[8] = [$row["amount"], $row["sumTime"], $row["avgTime"]];
                     break;
                 default:
                     break;
@@ -195,7 +201,6 @@ class Simplidone extends Widget
                         END AS overdue
                 FROM RECHNUGNEN r
                 LEFT JOIN JRINCIDENT j ON r.VORGANGZL = j.incident
-                WHERE r.STATUS = 'Gezahlt'
                 AND (r.VORGANGZL AND r.RECHNUNGSFAELLIGKEIT) IS NOT NULL
                 GROUP BY r.DOKUMENTENID
             ) AS allPayments";

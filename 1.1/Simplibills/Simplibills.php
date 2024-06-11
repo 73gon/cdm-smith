@@ -20,7 +20,7 @@ class Simplibills extends Widget{
 
     
     public function isAuthorized(){
-        return $this->getUser()->isInJobFunction('AR-CA');
+        return $this->getUser()->isInJobFunction('Widgets');
     }
     
 
@@ -34,9 +34,9 @@ class Simplibills extends Widget{
                 "Freigabe", 
                 "Buchhaltung DE",
                 "Einkauf",
-                "offene Mahnungen",
                 "Buchhaltung IFSC",
                 "Lieferantenanlage",
+                "Lieferantenanlage IFSC",
                 "ausstehene Zahlungen", 
                 "Gebuchte Rechnungen"
             ])
@@ -110,7 +110,7 @@ class Simplibills extends Widget{
         $result = $JobDB->query($query);
 
         $bearbeitung = array_fill(0, 8, 0);
-        $stepMapping = [ "1" => 0, "2" => 1, "3" => 2, "4" => 3, "7" => 3, "5" => 4, "15" => 5, "17" => 6, "30" => 7];
+        $stepMapping = [ "1" => 0, "2" => 1, "3" => 2, "4" => 3, "7" => 3, "5" => 4, "17" => 5, "30" => 6, "40" => 7];
 
         while ($row = $JobDB->fetchRow($result)) {
             $step = $row["STEP"];
