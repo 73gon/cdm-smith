@@ -2,8 +2,9 @@
 <link rel="stylesheet" href="//code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css">
 
 <script> 
-let invisLabel= JSON.parse(document.getElementById("simplidents_invisLabel").innerHTML);
-let invisIncident= JSON.parse(document.getElementById("simplidents_invisIncident").innerHTML);
+let invisLabel = JSON.parse(document.getElementById("simplidents_invisLabel").innerHTML);
+let invisIncident = JSON.parse(document.getElementById("simplidents_invisIncident").innerHTML);
+let invisEinheit = JSON.parse(document.getElementById("simplidents_invisEinheit").innerHTML);
 
 
 simplidentsWidget();
@@ -12,25 +13,63 @@ $j('#simplidents_outerBox').parent().toggleClass('simplidents_background', true)
 function simplidentsWidget(){
 	let outerBox = document.getElementById("simplidents_outerBox");
 
+    let dropDown = document.createElement("select");
+    dropDown.id = "simplidents_dropDown";
+    dropDown.setAttribute("class", "simplidents_dropDown");
+    dropDown.addEventListener("change", function() {
+        update();
+    });
+    for (let i = 0; i < invisEinheit.length; i++) {
+        let option = document.createElement("option");
+        option.value = invisEinheit[i];
+        option.text = invisEinheit[i];
+        dropDown.appendChild(option);
+    }
+    outerBox.appendChild(dropDown);
     let gridContainer = document.createElement("div");
+        gridContainer.id = "simplidents_gridContainer";
         gridContainer.setAttribute("class", "simplidents_gridContainer");
     outerBox.appendChild(gridContainer);
-        let gridBoxLeft = document.createElement("div");
-            gridBoxLeft.setAttribute("class", "simplidents_gridBox");
-        gridContainer.appendChild(gridBoxLeft);
-        let gridBoxRight = document.createElement("div");
-            gridBoxRight.setAttribute("class", "simplidents_gridBox");
-        gridContainer.appendChild(gridBoxRight);
-        for(let i = 0; i < invisLabel.length; i++){
-            let label = document.createElement("div");
-                label.setAttribute("class", "simplidents_label");
-                label.innerHTML = invisLabel[i];
-            gridBoxLeft.appendChild(label);
-            let incident = document.createElement("div");
-                incident.setAttribute("class", "simplidents_incident");
-                incident.innerHTML = invisIncident[i];
-            gridBoxRight.appendChild(incident);
-        }
+    createTable();
+}
+
+function createTable(){
+    let gridContainer = document.getElementById("simplidents_gridContainer");
+    gridContainer.innerHTML = '';
+    let gridBoxLeft = document.createElement("div");
+    gridBoxLeft.setAttribute("class", "simplidents_gridBox");
+    gridContainer.appendChild(gridBoxLeft);
+    let gridBoxRight = document.createElement("div");
+        gridBoxRight.setAttribute("class", "simplidents_gridBox");
+    gridContainer.appendChild(gridBoxRight);
+    for(let i = 0; i < invisLabel.length; i++){
+        let label = document.createElement("div");
+            label.setAttribute("class", "simplidents_label");
+            label.innerHTML = invisLabel[i];
+        gridBoxLeft.appendChild(label);
+        let incident = document.createElement("div");
+            incident.setAttribute("class", "simplidents_incident");
+            incident.innerHTML = invisIncident[i];
+        gridBoxRight.appendChild(incident);
+    }
+}
+
+function update() {
+        einheit = document.getElementById("simplidents_dropDown").value;
+
+        $j.ajax({
+            url: "dashboard/MyWidgets/Simplidents/query.php",
+            type: "GET",
+            data: { einheit: einheit },
+            dataType: "text",
+            success: function (data) {
+                invisIncident = JSON.parse(data);
+                createTable();
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+                console.log(textStatus, errorThrown);
+            }
+        });
 }
 </script>
 
@@ -40,6 +79,16 @@ function simplidentsWidget(){
 #simplidents_outerBox{
     width: 100%;
     font-family: 'Poppins';
+}
+
+.simplidents_dropDown{
+    width: 100%;
+    padding: 5px;
+    font-size: 16px;
+    line-height: 1.75;
+    border: none;
+    background-color: #242730;
+    color: #FFCC0D;
 }
 
 .simplidents_background{
@@ -55,7 +104,7 @@ function simplidentsWidget(){
 
 .simplidents_gridBox{
     padding: 10px;
-    font-size: 15px;
+    font-size: 16px;
     line-height: 1.75;
 }
 
@@ -80,4 +129,5 @@ function simplidentsWidget(){
 
 <div id="simplidents_invisIncident">{{incidents}}</div>
 <div id="simplidents_invisLabel">{{labels}}</div>
+<div id="simplidents_invisEinheit">{{einheit}}</div>
 <div id="simplidents_outerBox"></div>

@@ -12,9 +12,9 @@ class Simplidents extends Widget{
 	public function getDimensions() {
 
         return [
-            'minHeight' => 3,
+            'minHeight' => 4,
             'minWidth' => 2,
-            'maxHeight' => 3,
+            'maxHeight' => 4,
             'maxWidth' => 2,
         ];
     }
@@ -39,43 +39,24 @@ class Simplidents extends Widget{
                 "Lieferantenanlage IFSC",
                 "Lieferantenanlage Compliance",
                 "offene Mahnungen"
-            ])
+            ]),
+            'einheit' => $this->getEinheit()
         ];
     }
 	
 	public function getIncidents(){
         $JobDB = $this->getJobDB();
-        $temp = "SELECT s.STEP, s.STEPLABEL, COALESCE(COUNT(j.STEP), 0) AS STEP_COUNT
-                    FROM (
-                    SELECT '1' AS STEP, 'Erfassung' AS STEPLABEL
-                    UNION ALL
-                    SELECT '2', 'Prüfung'
-                    UNION ALL
-                    SELECT '3', 'Freigabe'
-                    UNION ALL
-                    SELECT '4', 'Buchhaltung'
-                    UNION ALL
-                    SELECT '7', 'Fuhrpark'
-                    UNION ALL
-                    SELECT '15', 'Mahnung'
-                    UNION ALL
-                    SELECT '17', 'Buchhaltung IFSC'
-                    UNION ALL
-                    SELECT '5', 'Einkauf'
-                    UNION ALL
-                    SELECT '30', 'Lieferantenanlage'
-                    UNION ALL 
-                    SELECT '40', 'Lieferantenanlage IFSC'
-                    UNION ALL
-                    SELECT '50', 'Lieferantenanlage Compliance'
-                    UNION ALL 
-                    SELECT '807', 'Zahllauf validieren'
-                    UNION ALL 
-                    SELECT '802', 'Zahlungsfreigabe'
-                    ) AS s
-                    LEFT JOIN JRINCIDENTS j ON s.STEP = j.STEP AND j.processname = 'RECHNUNGSBEARBEITUNG' AND (j.STATUS = 0 OR j.STATUS = 1)
-                    INNER JOIN JRINCIDENT g ON j.processid = g.processid AND g.`status`= 0
-                    GROUP BY s.STEP, s.STEPLABEL;";
+        $temp = "   
+                    SELECT j.STEP, COUNT(j.STEP) AS STEP_COUNT, j.steplabel
+                    FROM JRINCIDENTS j
+                    INNER JOIN JRINCIDENT i ON j.processid = i.processid
+                    LEFT JOIN RE_HEAD r ON j.process_step_id = r.step_id 
+                    WHERE j.processname = 'RECHNUNGSBEARBEITUNG'
+                    AND (j.STATUS = 0 OR j.STATUS = 1)
+                    AND i.status = 0
+                    AND j.STEP IN (1, 2, 3, 4, 17, 5, 807, 802, 30, 40, 50, 15)
+                    GROUP BY j.STEP
+                ";
         $result = $JobDB->query($temp);
 
 
@@ -124,5 +105,28 @@ class Simplidents extends Widget{
         array_unshift($incidents, (string)array_sum($incidents));
 
 	    return json_encode($incidents);
+    }
+
+    public function getEinheit(){
+        $JobDB = $this->getJobDB();
+        $query = "  
+                    SELECT r.EINHEITSNUMMER
+                    FROM JRINCIDENTS j
+                    INNER JOIN JRINCIDENT i ON j.processid = i.processid
+                    LEFT JOIN RE_HEAD r ON j.process_step_id = r.step_id 
+                    WHERE j.processname = 'RECHNUNGSBEARBEITUNG'
+                    AND (j.STATUS = 0 OR j.STATUS = 1)
+                    AND i.status = 0
+                    AND j.STEP IN (1, 2, 3, 4, 17, 5, 807, 802, 30, 40, 50, 15)
+                    AND r.EINHEITSNUMMER IS NOT NULL AND r.EINHEITSNUMMER != ''
+                    GROUP BY r.EINHEITSNUMMER
+                ";
+        $result = $JobDB->query($query);
+        $einheit = [];
+        while($row = $JobDB->fetchRow($result)){
+            $einheit[] = $row["EINHEITSNUMMER"];
+        }
+        array_unshift($einheit, "Alle");
+        return json_encode($einheit);
     }
 }
